@@ -84,7 +84,7 @@ try
             'peak','max',... % 'min'
             'value','abs', ... 'raw'
             'baseline',[],...
-            'ttest',0,... % turn on the ttest, not by default
+            'ttest',1,... % turn on the ttest, not by default
             'poi',[] ...
             );
         % cells don't work in struct function...
@@ -239,12 +239,10 @@ try
                  dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
             end
             dop_output.peak_mean = mean(mean(dop.tmp.window_data,2));
-            % standard deviation is always related to the mean, doesn't
-            % make any sense if there's a single epoch
             
             %hmp
             dop_output.epoch_mean = mean(dop.tmp.window_data,1);
-            
+           
             dop_output.peak_sd = std(mean(dop.tmp.window_data,2));
             
             % it's possible people will want this information...
@@ -254,17 +252,36 @@ try
 %             msg{end+1} = sprintf('Peak: # samples %u, # epochs %u:',...
 %                 dop_output.peak_samples,dop_output.peak_epochs);
 %             dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
-            for i = 1 : numel(dop_output.peak_mean)
-                msg{end+1} = sprintf(...
+            
+
+%            for i = 1 : numel(dop_output.peak_mean)
+%                 msg{end+1} = sprintf(...
+%                     'Peak mean = %3.2f (SD = %3.2f), Latency = %3.2f (%3.2f samples)',...
+%                     dop_output.peak_mean(i),dop_output.peak_sd(i),...
+%                     dop_output.peak_latency(i),dop_output.peak_latency_sample(i));
+%                 if numel(dop_output.peak_mean) > 1
+%                     msg{end} = strrep(msg{end},'Peak',...
+%                         sprintf('Epoch %u. Peak',i));
+%                 end
+%                 
+%                 dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
+%             end
+% %             
+            
+           for i = 1 : numel(dop_output.epoch_mean)
+                %msg{end+1} = 
+                sprintf(...
                     'Peak mean = %3.2f (SD = %3.2f), Latency = %3.2f (%3.2f samples)',...
-                    dop_output.peak_mean(i),dop_output.peak_sd(i),...
+                    dop_output.epoch_mean(i),dop_output.peak_sd,...
                     dop_output.peak_latency(i),dop_output.peak_latency_sample(i));
-                if numel(dop_output.peak_mean) > 1
+                if numel(dop_output.epoch_mean) > 1
                     msg{end} = strrep(msg{end},'Peak',...
                         sprintf('Epoch %u. Peak',i));
                 end
+                
                 dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
             end
+            
         end
         %% save okay & msg to 'dop' structure
         dop.okay = okay;

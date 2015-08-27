@@ -50,7 +50,8 @@ try
             'clear',1 ... % remove previous ''dop.sum'' field/data
             );
         % cells don't work in struct function...
-        inputs.defaults.summary = {'overall'};
+        inputs.defaults.summary = {'epoch','overall'}; %%%HP - had to add epochs here as would be overwritten below.
+        %inputs.defaults.summary = {'overall','epoch'}; %%%HP - had to add epochs here as would be overwritten below.
         inputs.defaults.channels = {'Difference'};
         inputs.defaults.periods = {'poi'};
         inputs.defaults.epochs = {'screen'}; % 'screen','odd','even','all','act','sep'
@@ -99,8 +100,8 @@ try
         if okay
             %         dop.calc.list = {'latency','LI','SD'};
             % shorten the variable names
-            for i = 1 : numel(dop.tmp.summary) %% Shouldn't this be dop.tmp.summary not inputs.defaults.summary
-                dop.tmp.sum = dop.tmp.summary{i};
+            for i = 1 : numel(inputs.defaults.summary)
+                dop.tmp.sum = inputs.defaults.summary{i};
                 for ii = 1 : numel(dop.tmp.channels)
                     dop.tmp.ch = dop.tmp.channels{ii};
                     for iii = 1 : numel(dop.tmp.periods)
@@ -256,4 +257,5 @@ try
     end
 catch err
     save(dopOSCCIdebug);rethrow(err);
+end
 end

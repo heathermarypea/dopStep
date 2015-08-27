@@ -281,9 +281,6 @@ try
             dop.save.fullfile_dat = strrep(dop.save.fullfile_mat,'.mat','.dat');
             
         end
-        
-        
-        
         %% labels/headers
         if okay && ~isfield(dop.save,'labels')
             
@@ -317,13 +314,6 @@ try
                                                 dop.tmp.var,dop.tmp.sum,j,dop.tmp.ch,dop.tmp.eps,...
                                                 dop.tmp.prd);
                                         end
-                                        
-%                                         %hmp
-%                                         case 'epoch'
-%                                         for j = 1 : dop.event.n % for the moment
-%                                             dop.save.labels{end+1} = sprintf('%s%u_%s',dop.tmp.sum,j,...
-%                                                 dop.tmp.prd);
-%                                         end
                                         
                                 end
                             end
@@ -398,16 +388,13 @@ try
                                             if k == numel(dop.save.labels)
                                                 dop.tmp.delims{3} = 2; % new line
                                             end
-                                            
-                                            dop.tmp.eps = 'all';
-                                            
-                                            %%%%%%%%%%%% something not
-                                            %%%%%%%%%%%% working for me
-                                            %%%%%%%%%%%% here.
-                                            dop.tmp.value = dop.sum.(dop.tmp.sum).(dop.tmp.ch).(dop.tmp.prd).(dop.tmp.eps).(dop.tmp.var)(j);
+                                            dop.tmp.eps = 'all'; %%%%HAD TO JUST PUT THIS IN HERE AS SCREENED IS NEVER CALCULATED FOR EPOCH CALCS!
+                                            dop.tmp.value = dop.sum.(dop.tmp.sum).(dop.tmp.ch).(dop.tmp.prd).(dop.tmp.eps).(dop.tmp.var);
                                             fprintf(dop.save.fid,...
                                                 [dopVarType(dop.tmp.value),...
                                                 dop.tmp.delims{dop.tmp.delims{3}}],dop.tmp.value);
+                                            
+                                    
                                         end
                                         
                                 end
