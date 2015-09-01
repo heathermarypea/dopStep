@@ -93,11 +93,11 @@ dop.save.messages = 1; % not sure what this does at the moment...
 
 dop.save.save_file = []; % this will be auto completed based upon the dop.def.task_name variable
 % dop.save.save_dir = 'C:\Users\mq20111600\Documents\nData\dopStep';
-% <<<<<<< HEAD
+
 if clip_on
     [dop,okay,msg] = dopSaveDir(dop,'suffix','clipped');
 else
-    % =======
+  
     [dop,okay,msg] = dopSaveDir(dop);
 end
 [dop,okay,msg] = dopSaveDef(dop,okay,msg);
