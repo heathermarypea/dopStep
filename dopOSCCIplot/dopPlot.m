@@ -384,7 +384,7 @@ try
                         %                         strcmp(get(dop.fig.ch,'Tag'),'ylower'))),'string',dop.tmp.ylim(1));
                         %                     set(dop.fig.ch(and(strcmp(get(dop.fig.ch,'Type'),'uicontrol'),...
                         %                         strcmp(get(dop.fig.ch,'Tag'),'yupper'))),'string',dop.tmp.ylim(2));
->>>>>>> upstream/master
+
                     end
                     if dop.tmp.wait; uiwait(dop.fig.h); end
                 otherwise
