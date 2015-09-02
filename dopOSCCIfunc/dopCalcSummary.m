@@ -247,10 +247,21 @@ try
 %             else
                 dop.tmp.window_data = dop.tmp.data(dop.tmp.window(:,1):dop.tmp.window(:,2),:);
 %             end
-            if ismember(dop.tmp.summary,{'overall','odd','even'})
-                % across all epochs (i.e., the average of all epochs)
-                dop.tmp.window_data = mean(dop.tmp.window_data,2);
-            else
+
+            
+            
+            
+            dop_output.peak_mean = mean(dop.tmp.window_data);% mean(mean(dop.tmp.window_data,2));
+            % standard deviation is always related to the mean, doesn't
+            % make any sense if there's a single epoch
+            dop_output.peak_sd = std(dop.tmp.window_data); % std(mean(dop.tmp.window_data,2));
+            
+            % it's possible people will want this information...
+            % really defined in order to clarify the earlier mean & sd
+            dop_output.peak_mean_sd = dop_output.peak_sd;% mean(std(dop.tmp.window_data,1,2));
+            dop_output.peak_sd_of_sd = dop_output.peak_sd; %std(std(dop.tmp.window_data,1,2));
+            
+            if ~strcmp(dop.tmp.summary,'overall')
                 % might as well have multiples of these too
                 dop_output.t_value = ones(1,dop_output.peak_epochs)*dop_output.t_value;
                 dop_output.t_df = ones(1,dop_output.peak_epochs)*dop_output.t_df;
@@ -258,8 +269,15 @@ try
             end
             
             if exist('ttest','file') && dop.tmp.ttest
+                
                 [dop_output.tsig,dop_output.tp,...
                     dop_output.ci,dop_output.stats] = ttest(dop.tmp.window_data);
+                
+                if strcmp(dop.tmp.summary,'overall')
+                    [dop_output.tsig,dop_output.tp,...
+                        dop_output.ci,dop_output.stats] = ttest(dop_output.peak_mean); %ttest(dop.tmp.window_data);
+                end
+                
                 dop_output.t_value = dop_output.stats.tstat;
                 dop_output.t_df = dop_output.stats.df;
                 dop_output.t_sd = dop_output.stats.sd;
@@ -271,19 +289,12 @@ try
                  dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
             end
             
-            
-            dop_output.peak_mean = mean(dop.tmp.window_data);% mean(mean(dop.tmp.window_data,2));
-            % standard deviation is always related to the mean, doesn't
-            % make any sense if there's a single epoch
-
-            dop_output.peak_sd = std(dop.tmp.window_data); % std(mean(dop.tmp.window_data,2));
-
-            % it's possible people will want this information...
-            % really defined in order to clarify the earlier mean & sd
-            dop_output.peak_mean_sd = dop_output.peak_sd;% mean(std(dop.tmp.window_data,1,2));
-            dop_output.peak_sd_of_sd = dop_output.peak_sd; %std(std(dop.tmp.window_data,1,2));
-            
-            if ismember(dop.tmp.summary,{'overall','odd','even'})
+            if strcmp(dop.tmp.summary,'overall')
+                
+%                 if ~strcmp(dop.tmp.summary,'overall')
+%                     % across all epochs (i.e., the average of all epochs)
+%                     dop.tmp.window_data = mean(dop.tmp.window_data,2);
+%                 end
                 
                 dop_output.peak_n = dop_output.peak_epochs;
                 dop_output.peak_mean = mean(dop_output.peak_mean);
