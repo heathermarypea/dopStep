@@ -35,6 +35,9 @@ function [dop_output,okay,msg,dop] = dopCalcSummary(dop_input,varargin)
 % 27-Jan-2015 NAB zeroed latency samples: ie -1 + ...
 % 01-Sep-2015 NAB sorted the epoch by epoch calculations, wasn't tested
 %   previously...
+% 11-Sep-2015 NAB playing with mean/sd labelling
+% 14-Sep-2015 NAB fixed sd issue, still waiting for Heather on the
+%   labelling...
 
 % start with dummy values in case there are problems
 tmp_default = 999;
@@ -43,10 +46,9 @@ dop_output = struct(...
     'peak_samples',tmp_default,...
     'peak_epochs',tmp_default,...
     'peak_mean',tmp_default,...
-    'peak_sd_note', 'This is the standard deviation of the means of the data',...
-    'peak_sd',tmp_default,...
-    'peak_mean_sd',tmp_default,...
-    'peak_sd_of_sd',tmp_default,...
+    'peak_sd',tmp_default,... 'peak_sd_note', 'This is the standard deviation of the means of the data',...
+    'peak_sd_mean',tmp_default,...'peak_mean_sd',tmp_default,...
+    'peak_sd_sd',tmp_default,...
     'period_samples',tmp_default,...
     'period_epochs',tmp_default,...
     'period_mean',tmp_default,...
@@ -64,7 +66,7 @@ dop_output = struct(...
     't_sd',tmp_default ...
     );
 
-         
+
 
 [dop,okay,msg,varargin] = dopSetBasicInputs(dop_input,varargin);
 msg{end+1} = sprintf('Run: %s',mfilename);
@@ -73,7 +75,7 @@ try
     if okay
         dopOSCCIindent;%fprintf('\nRunning %s:\n',mfilename);
         %% inputs
-%         inputs.turnOff = {'comment'};
+        %         inputs.turnOff = {'comment'};
         inputs.varargin = varargin;
         inputs.defaults = struct(...
             'file',[],...
@@ -156,23 +158,25 @@ try
             % it's possible people will want this information...
             % really defined in order to clarify the earlier mean & sd
             % doesn't work for epoch by epoch calculations
-            dop_output.period_mean_sd = dop_output.period_sd; %mean(std(dop_output.data,1,2));
+            dop_output.period_sd_of_mean = dop_output.period_sd; %mean(std(dop_output.data,1,2));
             dop_output.period_sd_of_sd = dop_output.period_sd; %mean(std(dop_output.data,1,2));
             
             
-            if ismember(dop.tmp.summary,{'overall','odd','even'})
+            if ismember(dop.tmp.summary,{'overall'})
                 % across all epochs (i.e., the average of all epochs)
                 dop_output.period_n = dop_output.period_epochs;
+                
+                % it's possible people will want this information...
+                % really defined in order to clarify the earlier mean & sd
+                dop_output.period_sd_of_mean = std(dop_output.period_mean);
+                dop_output.period_sd_of_sd = std(dop_output.period_sd);
                 
                 dop_output.period_mean = mean(dop_output.period_mean);
                 % standard deviation is always related to the mean, doesn't
                 % make any sense if there's a single epoch
-                dop_output.period_sd = std(dop_output.period_mean);
+                dop_output.period_sd = mean(dop_output.period_sd);
                 
-                % it's possible people will want this information...
-                % really defined in order to clarify the earlier mean & sd
-                dop_output.period_mean_sd = mean(dop_output.period_sd);
-                dop_output.period_sd_of_sd = std(dop_output.period_sd);
+                
                 
             end
             
@@ -215,7 +219,7 @@ try
             % values for each epoch
             [dop.tmp.peak_value,dop.tmp.peak_sample] = ...
                 eval([dop.tmp.peak,'(dop.tmp.peak_data)']); % could be min or max
-            if ismember(dop.tmp.summary,{'overall','odd','even'})
+            if ismember(dop.tmp.summary,{'overall'})
                 % across all epochs (i.e., the average of all epochs)
                 [dop.tmp.peak_value,dop.tmp.peak_sample] = ...
                     eval([dop.tmp.peak,'(mean(dop.tmp.peak_data,2))']); % could be min or max
@@ -242,12 +246,12 @@ try
                     dop.tmp.window(j,:) = [dop.tmp.n_pts - (dop.tmp.act_window/(1/dop.tmp.sample_rate)) dop.tmp.n_pts];
                 end
             end
-%             if size(dop.tmp.window,1) == 1
-%                 dop.tmp.window_data = dop.tmp.data(dop.tmp.window(1):dop.tmp.window(2),:);
-%             else
-                dop.tmp.window_data = dop.tmp.data(dop.tmp.window(:,1):dop.tmp.window(:,2),:);
-%             end
-
+            %             if size(dop.tmp.window,1) == 1
+            %                 dop.tmp.window_data = dop.tmp.data(dop.tmp.window(1):dop.tmp.window(2),:);
+            %             else
+            dop.tmp.window_data = dop.tmp.data(dop.tmp.window(:,1):dop.tmp.window(:,2),:);
+            %             end
+            
             
             
             
@@ -258,7 +262,7 @@ try
             
             % it's possible people will want this information...
             % really defined in order to clarify the earlier mean & sd
-            dop_output.peak_mean_sd = dop_output.peak_sd;% mean(std(dop.tmp.window_data,1,2));
+            dop_output.peak_sd_of_mean = dop_output.peak_mean;% mean(std(dop.tmp.window_data,1,2));
             dop_output.peak_sd_of_sd = dop_output.peak_sd; %std(std(dop.tmp.window_data,1,2));
             
             if ~strcmp(dop.tmp.summary,'overall')
@@ -283,33 +287,36 @@ try
                 dop_output.t_sd = dop_output.stats.sd;
             elseif ~dop.tmp.ttest
                 msg{end+1} = '''ttest'' variable set to 0, not running';
-                 dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
+                dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
             else
                 msg{end+1} = '''ttest'' function is not available - missing statistics toolbox';
-                 dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
+                dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
             end
             
             if strcmp(dop.tmp.summary,'overall')
                 
-%                 if ~strcmp(dop.tmp.summary,'overall')
-%                     % across all epochs (i.e., the average of all epochs)
-%                     dop.tmp.window_data = mean(dop.tmp.window_data,2);
-%                 end
+                %                 if ~strcmp(dop.tmp.summary,'overall')
+                %                     % across all epochs (i.e., the average of all epochs)
+                %                     dop.tmp.window_data = mean(dop.tmp.window_data,2);
+                %                 end
                 
                 dop_output.peak_n = dop_output.peak_epochs;
-                dop_output.peak_mean = mean(dop_output.peak_mean);
-                % standard deviation is always related to the mean, doesn't
-                % make any sense if there's a single epoch
-                dop_output.peak_sd = std(dop_output.peak_mean);
                 
                 % it's possible people will want this information...
                 % really defined in order to clarify the earlier mean & sd
-                dop_output.peak_mean_sd = mean(dop_output.peak_sd);
+                dop_output.peak_sd_of_mean = std(dop_output.peak_mean);
                 dop_output.peak_sd_of_sd = std(dop_output.peak_sd);
+                
+                dop_output.peak_mean = mean(dop_output.peak_mean);
+                % standard deviation is always related to the mean, doesn't
+                % make any sense if there's a single epoch
+                dop_output.peak_mean_of_sd = mean(dop_output.peak_sd);
+                
+                
             end
-%             msg{end+1} = sprintf('Peak: # samples %u, # epochs %u:',...
-%                 dop_output.peak_samples,dop_output.peak_epochs);
-%             dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
+            %             msg{end+1} = sprintf('Peak: # samples %u, # epochs %u:',...
+            %                 dop_output.peak_samples,dop_output.peak_epochs);
+            %             dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
             for i = 1 : numel(dop_output.peak_mean)
                 msg{end+1} = sprintf(...
                     'Peak mean = %3.2f (SD = %3.2f), Latency = %3.2f (%3.2f samples)',...
