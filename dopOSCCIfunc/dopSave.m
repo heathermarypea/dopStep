@@ -449,12 +449,9 @@ try
                                                         dop.tmp.delims{dop.tmp.delims{3}}],dop.tmp.value);
                                                 end
                                             end
-<<<<<<< HEAD
 
-                                        end
-=======
                                     end
->>>>>>> upstream/master
+
                                 end
                             end
                         end
