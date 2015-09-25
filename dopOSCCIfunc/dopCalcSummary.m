@@ -277,10 +277,11 @@ try
                 [dop_output.tsig,dop_output.tp,...
                     dop_output.ci,dop_output.stats] = ttest(dop.tmp.window_data);
                 
+                
                 if strcmp(dop.tmp.summary,'overall')
-                    [dop_output.tsig,dop_output.tp,...
-                        dop_output.ci,dop_output.stats] = ttest(dop_output.peak_mean); %ttest(dop.tmp.window_data);
-                end
+                   [dop_output.tsig,dop_output.tp,...
+                       dop_output.ci,dop_output.stats] = ttest(dop_output.peak_mean); %ttest(dop.tmp.window_data);
+               end
                 
                 dop_output.t_value = dop_output.stats.tstat;
                 dop_output.t_df = dop_output.stats.df;

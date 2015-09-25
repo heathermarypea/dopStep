@@ -393,6 +393,7 @@ try
                     plotname = [dop.file dop.data.use_type '.png'];
                     print(gcf,plotname,'-dpng');
                     export_fig(plotname);
+           
                     
                     if dop.tmp.wait; uiwait(dop.fig.h);
                     end
@@ -406,6 +407,10 @@ try
         %% save okay & msg to 'dop' structure
         dop.okay = okay;
         dop.msg = msg;
+        
+        %% HP solution for outputting same values as calculated in dopPlot
+        
+        dop.sum.overall.Difference.poi2to14.screen.plot = dop.tmp.sum;
         
         dopOSCCIindent('done');%fprintf('\nRunning %s:\n',mfilename);
     end
