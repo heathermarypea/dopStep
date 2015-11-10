@@ -182,6 +182,61 @@ try
                 
             end
             
+            %%%% ADDED BY HP TO GET STATS BASED ON EPOCH.
+            
+            if ~strcmp(dop.tmp.summary,'overall')
+                % might as well have multiples of these too
+                dop_output.period_t_value = ones(1,dop_output.period_epochs)*dop_output.t_value;
+                dop_output.period_t_df = ones(1,dop_output.period_epochs)*dop_output.t_df;
+                dop_output.period_t_sd = ones(1,dop_output.period_epochs)*dop_output.t_sd;
+            end
+            
+            if exist('ttest','file') && dop.tmp.ttest
+                
+                [dop_output.period_tsig,dop_output.period_tp,...
+                    dop_output.period_ci,dop_output.period_stats] = ttest(dop_output.data);
+                
+                
+                if strcmp(dop.tmp.summary,'overall')
+                   [dop_output.period_tsig,dop_output.period_tp,...
+                       dop_output.period_ci,dop_output.period_stats] = ttest(mean(dop_output.data)); %ttest(dop.tmp.window_data);
+               end
+                
+                dop_output.period_t_value = dop_output.period_stats.tstat;
+                dop_output.period_t_df = dop_output.period_stats.df;
+                dop_output.period_t_sd = dop_output.period_stats.sd;
+          
+            elseif ~dop.tmp.ttest
+                msg{end+1} = '''ttest'' variable set to 0, not running';
+                dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
+            else
+                msg{end+1} = '''ttest'' function is not available - missing statistics toolbox';
+                dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
+            end
+            
+            if strcmp(dop.tmp.summary,'overall')
+                
+                %                 if ~strcmp(dop.tmp.summary,'overall')
+                %                     % across all epochs (i.e., the average of all epochs)
+                %                     dop.tmp.window_data = mean(dop.tmp.window_data,2);
+                %                 end
+                
+                dop_output.peak_n = dop_output.peak_epochs;
+                
+                % it's possible people will want this information...
+                % really defined in order to clarify the earlier mean & sd
+                dop_output.peak_sd_of_mean = std(dop_output.peak_mean);
+                dop_output.peak_sd_of_sd = std(dop_output.peak_sd);
+                
+                dop_output.peak_mean = mean(dop_output.peak_mean);
+                % standard deviation is always related to the mean, doesn't
+                % make any sense if there's a single epoch
+                dop_output.peak_mean_of_sd = mean(dop_output.peak_sd);
+                
+                
+            end
+            
+            
             msg{end+1} = sprintf('Summary of samples %u, # epochs %u:',...
                 dop_output.period_samples,dop_output.period_epochs);
             dopMessage(msg,dop.tmp.msg,1,okay,dop.tmp.wait_warn);
