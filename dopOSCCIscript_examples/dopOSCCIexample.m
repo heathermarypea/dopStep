@@ -42,7 +42,7 @@ dop.def.screen = {'length','act','sep'};
 dop.def.keep_data_steps = 1;
 
 dop.save.extras = {'file'};%{'file','norm','base'}; % you can add your own variables to this, just need to be defined somewhere as dop.save.x = where x = variable name
-dop.save.summary = {'overall','epoch'}; % vs 'epoch'
+dop.save.summary = {'overall','epochs'}; % vs 'epoch'
 dop.save.channels = {'Difference'};
 dop.save.periods = {'poi'};
 dop.save.epochs = {'screen','odd','even'};
@@ -104,10 +104,6 @@ if okay
         
         [dop,okay,msg] = dopEpochScreen(dop,okay,msg);
         
-        %         [dop,okay,msg] = dopEpochScreenAct(dop,okay,msg);
-        %
-        %         [dop,okay,msg] = dopEpochScreenSep(dop,okay,msg);
-        
         [dop,okay,msg] = dopBaseCorrect(dop,okay,msg);
         
         [dop,okay,msg] = dopCalcAuto(dop,okay,msg);%'periods',{'baseline','poi'}); % ,'poi',[5 15],'act_window',2);
@@ -123,7 +119,6 @@ if okay
         %             pause;
         %         end
         %% collect grp data?
-        %     dop.grp.Difference.poi.data(:,j) = dop.overall.Difference.poi.data;
         [dop] = dopDataCollect(dop,okay,msg);
         %         end
         %         if ~okay
@@ -135,7 +130,7 @@ if okay
     % save the 'collected' data for all okay files
     [dop,okay,msg] = dopSaveCollect(dop);
     % plot the 'collected' data for all okay files
-    [dop,okay,msg] = dopPlot(dop,'collect');
+    [dop,okay,msg] = dopPlot(dop,'collect','type','base'); % ,'wait'
     %     [dop,okay,msg] = dopPlot(dop,'collect','wait');
     % close all popup warning dialogs with one command :)
     dopCloseMsg;

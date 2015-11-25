@@ -1,14 +1,13 @@
-function dop = dopStep(dop)
-% dopOSCCI3: dopStep ~ 17-Dec-2013 (last edit)
+function dop = dopHistory(dop)
+% dopOSCCI3: dopHistory ~ 17-Dec-2013 (last edit)
 %
 % notes:
 % keep a record of what processing has been done
 %
-% * not yet implemented (17-Dec-2013)
 %
 % Use:
 %
-% dop = dopStep(dop);
+% dop = dopHistory(dop);
 %
 % where:
 % > Inputs:
@@ -19,24 +18,26 @@ function dop = dopStep(dop)
 %
 %
 % Created: 17-Dec-2013 NAB
+% Edits:
+% 13-Oct-2015 NAB: renamed to dopHistory
 
 try
     fprintf('\nRunning %s:\n',mfilename);
     tmp  =  dbstack;
     invoking_mfile  =  tmp(2).name;
-    dop.step.last = invoking_mfile;
+    dop.hist.last = invoking_mfile;
     % keep a record of everything that's been run... be nice if I could
     % collect the inputs as well... actually, wouldn't be too hard to move
     % the varargin to this function and save a copy as well... *
-    if ~isfield(dop.step,'hist')
-        dop.step.hist = [];
+    if ~isfield(dop.hist,'steps')
+        dop.hist.steps = [];
     end
-    dop.step.hist{end+1} = invoking_mfile; % add to this each time
+    dop.hist.hist{end+1} = invoking_mfile; % add to this each time
     % count the steps
-    if ~isfield(dop.step,'count')
-        dop.step.count = 0;
+    if ~isfield(dop.hist,'count')
+        dop.hist.count = 0;
     end
-    dop.step.count = dop.step.count + 1; % counter
+    dop.hist.count = dop.hist.count + 1; % counter
     fprintf('\n');
     
 catch err

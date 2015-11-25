@@ -176,7 +176,7 @@ try
                     dop.fig.ch = get(dop.fig.h,'children');
                     dop.fig.ax = dop.fig.ch(strcmp(get(dop.fig.ch,'Type'),'axes'));
                     dop.fig.xdata = (1/dop.tmp.sample_rate):(1/dop.tmp.sample_rate):size(dop.tmp.data,1)*(1/dop.tmp.sample_rate);
-                    if size(dop.tmp.data,2) <= numel(dop.data.channel_labels);
+                    if isfield(dop,'data') && isfield(dop.data,'channel_labels') && size(dop.tmp.data,2) <= numel(dop.data.channel_labels);
                         if ~isfield(dop,'data') && ~isfield(dop.data,'channel_colours')
                             dop.data.channel_colours = {'b','r','g'};
                         end
@@ -220,7 +220,18 @@ try
                         end
                         dopPlotLegend(dop.fig.h);
                     else
+                        
                         plot(dop.fig.ax,dop.fig.xdata,dop.tmp.data);
+                        dop.tmp.ch = get(dop.fig.ax,'children');
+                        for k = 1 : numel(dop.tmp.ch) % size(dop.tmp.data,2)
+                            dop.tmp.diplay_name = sprintf('column_%u',k);
+                            if isfield(dop.data,'file_info') && isfield(dop.data.file_info,'dataLabels') ...
+                                    && numel(dop.data.file_info.dataLabels) >= k
+                                dop.tmp.display_name = dop.data.file_info.dataLabels{k};
+                            end
+                            set(dop.tmp.ch(numel(dop.tmp.ch)+1-k),'DisplayName',dop.tmp.display_name);
+                        end
+                        dopPlotLegend(dop.fig.h);
                     end
                     set(get(dop.fig.ax,'YLabel'),'string','Blood Flow Velocity');
                     set(get(dop.fig.ax,'XLabel'),'string','Recording time in seconds');
