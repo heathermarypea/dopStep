@@ -397,17 +397,8 @@ try
                         %                         strcmp(get(dop.fig.ch,'Tag'),'ylower'))),'string',dop.tmp.ylim(1));
                         %                     set(dop.fig.ch(and(strcmp(get(dop.fig.ch,'Type'),'uicontrol'),...
                         %                         strcmp(get(dop.fig.ch,'Tag'),'yupper'))),'string',dop.tmp.ylim(2));
-
-                     
-                        
                     end
-                    plotname = [dop.file dop.data.use_type '.png'];
-                    print(gcf,plotname,'-dpng');
-                    export_fig(plotname);
-           
-                    
-                    if dop.tmp.wait; uiwait(dop.fig.h);
-                    end
+                    if dop.tmp.wait; uiwait(dop.fig.h); end
                 otherwise
                     msg{end+1} = sprintf('''%s'' plot type not yet programmed',...
                         dop.tmp.type);
@@ -418,10 +409,6 @@ try
         %% save okay & msg to 'dop' structure
         dop.okay = okay;
         dop.msg = msg;
-        
-        %% HP solution for outputting same values as calculated in dopPlot
-        
-        dop.sum.overall.Difference.poi2to14.screen.plot = dop.tmp.sum;
         
         dopOSCCIindent('done');%fprintf('\nRunning %s:\n',mfilename);
     end

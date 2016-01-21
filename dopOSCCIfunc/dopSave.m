@@ -307,9 +307,6 @@ try
             dop.save.fullfile_dat = strrep(dop.save.fullfile_mat,'.mat','.dat');
             
         end
-        
-        
-        
         %% labels/headers
         if okay && ~isfield(dop.save,'labels')
             
@@ -480,9 +477,7 @@ try
                                                         dop.tmp.delims{dop.tmp.delims{3}}],dop.tmp.value);
                                                 end
                                             end
-
                                     end
-
                                 end
                             end
                         end

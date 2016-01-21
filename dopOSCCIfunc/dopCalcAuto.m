@@ -101,9 +101,7 @@ try
         if okay
             %         dop.calc.list = {'latency','LI','SD'};
             % shorten the variable names
-
             for i = 1 : numel(dop.tmp.summary) % numel(inputs.defaults.summary)
-
                 dop.tmp.sum = dop.tmp.summary{i};
                 for ii = 1 : numel(dop.tmp.channels)
                     dop.tmp.ch = dop.tmp.channels{ii};
@@ -240,7 +238,6 @@ try
                                 'summary',dop.tmp.sum,... % 'overall' or epoch'
                                 'period',dop.tmp.prd,...
                                 'epoch',dop.tmp.epoch,...
-                                'summary',dop.tmp.sum,...
                                 'act_window',dop.tmp.act_window,...
                                 'sample_rate',dop.tmp.sample_rate,...
                                 'poi',dop.tmp.poi(jjj,:),...
@@ -274,4 +271,5 @@ try
     end
 catch err
     save(dopOSCCIdebug);rethrow(err);
+end
 end

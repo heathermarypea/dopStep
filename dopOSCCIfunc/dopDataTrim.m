@@ -107,7 +107,7 @@ try
             % update what's been done to the data
             [dop,okay,msg] = dopUseDataOperations(dop,okay,msg,'trim');
             % update the event markers to be inline with the trim
-            [dop,okay,msg] = dopEventMarkers(dop,okay,msg,'outlier_type','sd');
+            [dop,okay,msg] = dopEventMarkers(dop,okay,msg);
             
             [dop,okay,msg] = dopMultiFuncTmpCheck(dop,okay,msg);
         end
